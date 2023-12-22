@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+import datetime
+import sys
+
+import pandas as pd
+
+
+def main():
+    args = sys.argv
+    if len(args) != 3:
+        print("Must specify file name and number of participants")
+        exit(1)
+
+    df = pd.read_csv(args[1])
+    participants = int(args[2])
+
+    df = df[df['Description'] != "Total balance"]
+
+    renaming_columns = {
+        "Date": "date",
+        "Cost": "amount",
+        "Description": "note",
+        "Currency": "currency"
+    }
+
+    df = df[renaming_columns.keys()]
+    df.rename(
+        inplace=True,
+        columns=renaming_columns,
+    )
+    df["date"] = pd.to_datetime(df["date"]).map(lambda x: x.isoformat())
+    df["amount"] = df["amount"].astype('float64')
+
+    df["account"] = "Personal"
+    df["category"] = "Unspecified"
+    df["amount"] /= -1 * participants
+    df["amount"] = df["amount"].round(decimals=2)
+
+    print(df.to_csv(
+        index=False,
+    ))
+
+
+if __name__ == '__main__':
+    main()
