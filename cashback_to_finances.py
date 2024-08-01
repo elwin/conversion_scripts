@@ -43,7 +43,7 @@ def main():
         "Transaction date": "date",
         "Amount": "amount",
         "Description": "note",
-        "Category": "category",
+        "Registered Category": "category",
     }
 
     df = df[renaming_columns.keys()]

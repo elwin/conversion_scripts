@@ -1,9 +1,9 @@
 import itertools
+import multiprocessing
 import os
 import statistics
 from tabulate import tabulate
 import requests
-import multiprocessing
 
 pipeline_nums = 10
 parallelism = 100
@@ -18,21 +18,22 @@ def median(lst):
 
 token = os.getenv("GITLAB_TOKEN_RO")
 
-pool = multiprocessing.Pool(parallelism)
+# pool = multiprocessing.Pool(parallelism)
 
 def main():
     project_ids = {
-        # 34401392: "iot-data-provider",
-        # 35505523: "fleet-ops",
+        34401392: "iot-data-provider",
+        35505523: "fleet-ops",
         48079192: "nx0",
-        # 16699974: "connect",
-        # 9570796: "re-connect",
-        # 23935579: "track-and-trace",
+        16699974: "connect",
+        9570796: "re-connect",
+        23935579: "track-and-trace",
     }
 
     headers = ["project", "median", "average", "max"]
     table = []
 
+    pool = multiprocessing.Pool()
     for (project_id, res) in pool.map(fetch_duration_wrapper, project_ids.keys()):
         durations = fetch_durations(project_id)
         table.append([project_ids[project_id], median(durations) / 60, average(durations) / 60, max(durations) / 60])
