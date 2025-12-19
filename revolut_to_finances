@@ -18,6 +18,7 @@ def main():
         "Description": "note",
     }
 
+    df["Amount"] -= df["Fee"]
     df = df[renaming_columns.keys()]
     df.rename(
         inplace=True,

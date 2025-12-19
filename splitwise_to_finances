@@ -17,9 +17,11 @@ def main():
 
     renaming_columns = {
         "Datum": "date",
-        "Elwin Stephan": "amount",
+        "Kosten": "total amount",
         "Beschreibung": "note",
-        "Währung": "currency"
+        "Währung": "currency",
+        "Elwin Stephan": "my share",
+        "Kosten": "total amount",
     }
 
     df = df[renaming_columns.keys()]
@@ -28,11 +30,16 @@ def main():
         columns=renaming_columns,
     )
     df["date"] = pd.to_datetime(df["date"]).map(lambda x: x.isoformat())
-    df["amount"] = -df["amount"].astype('float64').abs()
+    df["my share"] = df["my share"].astype('float64')
+    df["total amount"] = df["total amount"].astype('float64')
+    mask = df["my share"] > 0
+    df["amount"] = df[mask]["total amount"] - df[mask]["my share"] + df[~mask]["my share"] * -1
+    df.loc[mask, "amount"] = df.loc[mask, "total amount"] - df.loc[mask, "my share"]
+    df.loc[~mask, "amount"] = df.loc[~mask, "my share"] * -1
 
     df["account"] = "Personal"
     df["category"] = "Unspecified"
-    df["amount"] = df["amount"].round(decimals=2)
+    df["amount"] = df["amount"].round(decimals=2) * -1
 
     print(df.to_csv(
         index=False,

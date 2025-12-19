@@ -38,7 +38,7 @@ def main():
         durations = fetch_durations(project_id)
         table.append([project_ids[project_id], median(durations) / 60, average(durations) / 60, max(durations) / 60])
 
-    print(tabulate(table, headers=headers))
+    print(tabulate(table, headers=headers, tablefmt="tsv"))
 
 
 def fetch_duration_wrapper(project_id):
